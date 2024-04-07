@@ -1,36 +1,41 @@
 import { useState } from "react";
 import Dashboard from "./Dashboard";
 import axios from "axios";
+import {tostMessage} from "./util/tostMessage"
 
 const Login = () => {
   const [user, setUser] = useState("kminchelle");
   const [password, setPassword] = useState("0lelplR");
- 
+
   const [isErr, setErr] = useState(null);
   const [data, setData] = useState({});
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log(user);
     try {
       const res = await axios.post("https://dummyjson.com/auth/login", {
         username: user,
         password: password,
-        expiresInMins: 1, // optional, defaults to 60
+        expiresInMins: 10, // optional, defaults to 60
       });
-      // console.log(res);
+      console.log(res);
       console.log(res.data);
+      tostMessage.successMsg(`Hy ${res.data.firstName}, Login successfully`);
+
       localStorage.setItem("TOKEN", res.data.token);
       setData(res.data);
     } catch (error) {
       console.error(error);
+      // e(error.response.data.message || "Invalid Login")
+      tostMessage.errorMsg(error.response.data.message || "Invalid Login")
+      // setErr(error.response.data.message || "Invalid Login");
     }
   };
 
   const token = localStorage.getItem("TOKEN");
 
-
- 
   //"kminchelle"  "0lelplR"
   //  //make a function to add two numbers
   //  const addFunction = () =>{
@@ -42,14 +47,14 @@ const Login = () => {
       style={{
         display: "flex",
         height: "100vh",
-        backgroundColor: "lightgreen",
+        // backgroundColor: "lightgreen",
         justifyContent: "center",
         alignItems: "center",
+        fontFamily: "",
       }}
     >
       {token ? (
         <>
-          
           <Dashboard />
         </>
       ) : (
@@ -61,9 +66,10 @@ const Login = () => {
             display: "flex",
             flexDirection: "column",
             borderRadius: 5,
+            width: 400,
           }}
         >
-          <h5 style={{ marginBottom: 10 }}>Login</h5>
+          <h2 style={{ marginBottom: 10 }}>Login</h2>
           <input
             value={user}
             type="user"
@@ -82,7 +88,12 @@ const Login = () => {
 
           <button
             onClick={handleSubmit}
-            style={{ marginBottom: 10, backgroundColor: "lightblue" }}
+            style={{
+              marginBottom: 10,
+              backgroundColor: "lightblue",
+              color: "black",
+              fontWeight: 600,
+            }}
           >
             Submit
           </button>
